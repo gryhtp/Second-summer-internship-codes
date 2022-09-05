@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</body>
+<script>
+    let dataArray = [];
+    let timeArray = [];
+    let testNumber = -1;
+    let dataFix = true;
+    let arrayControl = 0;
+    let currentTimeArray = [];
+
+    function random() {
+        return Math.random() * 100
+    }
+
+    // async function a() {
+    //     await axios.get("http://localhost:8080/https://api.btcturk.com/api/v2/ticker").then(response => {
+    //         if (dataArray.length >= 21) {
+    //             dataArray.shift();
+    //         }
+    //         if (timeArray.length >= 21) {
+    //             timeArray.shift();
+    //         }
+    //         if (dataArray.length === 0) {
+    //             dataArray.push(response.data.data[0].last);
+    //             timeArray.push(response.data.data[0].timestamp);
+    //         } else {
+    //             if (timeArray[arrayControl] > response.data.data[0].timestamp) {
+    //             } else {
+    //                 dataArray.push(response.data.data[0].last);
+    //                 timeArray.push(response.data.data[0].timestamp);
+    //                 if (testNumber < 20) {
+    //                     testNumber++;
+    //                 }
+                    
+    //                 if(arrayControl < 21){
+    //                     arrayControl++;
+    //                 }
+    //             }
+    //         }
+
+    //     });
+    // }
+
+    let margin = { top: 20, right: 60, bottom: 20, left: 60 },
+        width = 975 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    let x = d3.scale.linear()
+        .domain([0, 17])
+        .range([0, width]);
+
+    let y = d3.scale.linear()
+        .domain([d3.min([0, 100]), d3.max([0, 100])])
+        .range([height, 0]);
+
+    let line = d3.svg.line()
+        .x(function (d, i) { return x(i); })
+        .y(function (d, i) { return y(d); });
+
+    let svg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.append("defs").append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("width", width)
+        .attr("height", height);
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + y(0) + ")")
+        .call(d3.svg.axis().scale(x).orient("bottom"));
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(d3.svg.axis().scale(y).orient("left"));
+
+    svg.append("g")
+        .attr("transform", "translate(" + x(17) + ", 0)")
+        .attr("class", "y axis")
+        .call(d3.svg.axis().scale(y).orient("right"));
+
+    svg.append("g")
+        .attr("transform", "translate(0," + y(10) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(x).tickValues([]))
+
+    svg.append("g")
+        .attr("transform", "translate(0," + y(20) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(x).tickValues([]))
+    svg.append("g")
+        .attr("transform", "translate(0," + y(30) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(x).tickValues([]))
+
+    svg.append("g")
+        .attr("transform", "translate(0," + y(40) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(x).tickValues([]))
+
+    svg.append("g")
+        .attr("transform", "translate(0," + y(50) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(x).tickValues([]))
+
+    svg.append("g")
+        .attr("transform", "translate(0," + y(60) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(x).tickValues([]))
+
+    svg.append("g")
+        .attr("transform", "translate(0," + y(70) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(x).tickValues([]))
+
+    svg.append("g")
+        .attr("transform", "translate(0," + y(80) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(x).tickValues([]))
+
+    svg.append("g")
+        .attr("transform", "translate(0," + y(90) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(x).tickValues([]))
+
+    svg.append("g")
+        .attr("transform", "translate(0," + y(100) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(x).tickValues([]))
+
+    let path = svg.append("g")
+        .attr("clip-path", "url(#clip)")
+        .append("path")
+        .datum(dataArray)
+        .attr("class", "line")
+        .attr("d", line);
+
+    // setInterval(a, 1000);
+    tick();
+
+    function tick() {
+
+        dataArray.push(random());
+        testNumber++;
+        console.log(dataArray);
+
+        path
+            .attr("d", line)
+            .attr("transform", null)
+            .transition()
+            .duration(2000)
+            .ease("linear")
+            .attr("transform", testNumber >= 18 ? "translate(" + x(-1) + ",0)" : "translate(0,0)")
+            .each("end", tick)
+        
+        if(dataArray.length > 18){
+            dataArray.shift();
+        }
+    }
+</script>
+
+<p style="text-align: center; margin-right: 300px;;">Sıcaklık/Veri numarası grafiği</p>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

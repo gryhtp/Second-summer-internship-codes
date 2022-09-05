@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</body>
+
+
+<script>
+    let dataArray = d3.range(243).map(function () { return 0; });
+    let timeArray = [];
+    let testNumber = -1;
+    let dataFix = true;
+    let arrayControl = 0;
+    let otherNumber = 0;
+    let currentTimeArray = [];
+
+    function random() {
+        return Math.random() * 100
+    }
+
+    // async function a() {
+    //     await axios.get("http://localhost:8080/https://api.btcturk.com/api/v2/ticker").then(response => {
+    //         if (dataArray.length >= 21) {
+    //             dataArray.shift();
+    //         }
+    //         if (timeArray.length >= 21) {
+    //             timeArray.shift();
+    //         }
+    //         if (dataArray.length === 0) {
+    //             dataArray.push(response.data.data[0].last);
+    //             timeArray.push(response.data.data[0].timestamp);
+    //         } else {
+    //             if (timeArray[arrayControl] > response.data.data[0].timestamp) {
+    //             } else {
+    //                 dataArray.push(response.data.data[0].last);
+    //                 timeArray.push(response.data.data[0].timestamp);
+    //                 if (testNumber < 20) {
+    //                     testNumber++;
+    //                 }
+
+    //                 if(arrayControl < 21){
+    //                     arrayControl++;
+    //                 }
+    //             }
+    //         }
+    //     });
+    // }
+
+    let n = 243,
+        duration = 1000,
+        now = new Date(Date.now() - duration),
+        count = 0,
+        data = d3.range(n).map(function () { return 0; });
+
+    let margin = { top: 20, right: 60, bottom: 20, left: 60 },
+        width = 975 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    // let x = d3.scale.linear()
+    //     .domain([0, 17])
+    //     .range([0, width]);
+
+    var x = d3.time.scale()
+        .domain([now - (n - 2) * duration, now - duration])
+        .range([10, 840]);
+
+    let y = d3.scale.linear()
+        .domain([d3.min([0, 100]), d3.max([0, 100])])
+        .range([height, 0]);
+
+    let dataLines = d3.scale.linear()
+        .range([height, 0]);
+
+    let midLines = d3.scale.linear()
+        .domain([d3.min([0, 200]), d3.max([0, 200])])
+        .range([855, 10]);
+
+    let line = d3.svg.line()
+        .interpolate("basis")
+        // .x(function (d, i) { return x(i); })
+        .x(function (d, i) { return x(now - (n - 1 - i) * duration); })
+        .y(function (d, i) { return dataLines(d); });
+
+    let head = d3.select("body").append("div");
+
+    let inlineSvg = head.append("svg")
+        .attr("overflow", "hidden")
+        .style('width', "1000")
+        .style("height", "600")
+        .style("position", "absolute")
+        .append("g")
+        .attr("transform", "translate(50,20)")
+
+    let parent = head.append("div")
+        .attr("id", "div")
+
+    let svg = parent.append("svg")
+        .attr("overflow", "hidden")
+        .style('width', "2000")
+        .style("height", "600")
+        .style("display", "block")
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+    svg.append("defs").append("clipPath")
+        .append("rect")
+        .attr("width", width)
+        .attr("height", height)
+
+    inlineSvg.append("defs").append("clipPath")
+        .append("rect")
+        .attr("width", width)
+        .attr("height", height)
+
+    let axis = svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(x.axis = d3.svg.axis().scale(x).orient("bottom"));
+
+    inlineSvg.append("g")
+        .attr("transform", "translate(10, 0)")
+        .attr("class", "y axis")
+        .call(d3.svg.axis().scale(y).orient("left"));
+
+    inlineSvg.append("g")
+        .attr("transform", "translate(855, 0)")
+        .attr("class", "y axis")
+        .call(d3.svg.axis().scale(y).orient("right"));
+
+    inlineSvg.append("g")
+        .attr("transform", "translate(0," + y(10) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(midLines).tickValues([]))
+
+    inlineSvg.append("g")
+        .attr("transform", "translate(0," + y(20) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(midLines).tickValues([]))
+    inlineSvg.append("g")
+        .attr("transform", "translate(0," + y(30) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(midLines).tickValues([]))
+
+    inlineSvg.append("g")
+        .attr("transform", "translate(0," + y(40) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(midLines).tickValues([]))
+
+    inlineSvg.append("g")
+        .attr("transform", "translate(0," + y(50) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(midLines).tickValues([]))
+
+    inlineSvg.append("g")
+        .attr("transform", "translate(0," + y(60) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(midLines).tickValues([]))
+
+    inlineSvg.append("g")
+        .attr("transform", "translate(0," + y(70) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(midLines).tickValues([]))
+
+    inlineSvg.append("g")
+        .attr("transform", "translate(0," + y(80) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(midLines).tickValues([]))
+
+    inlineSvg.append("g")
+        .attr("transform", "translate(0," + y(90) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(midLines).tickValues([]))
+
+    inlineSvg.append("g")
+        .attr("transform", "translate(0," + y(100) + ")")
+        .attr("class", "x axis")
+        .call(d3.svg.axis().scale(midLines).tickValues([]))
+
+    let path = svg
+        .append("path")
+        .datum(dataArray)
+        .attr("class", "line")
+        .attr("d", line)
+
+    tick();
+
+    // setInterval(a, 1000);
+    function tick() {
+
+        now = new Date();
+        x.domain([now - (n - 2) * duration, now - duration]);
+        dataLines.domain([0, d3.max(dataArray)]);
+
+        dataArray.push(random());
+        otherNumber++;
+        console.log(dataArray);
+
+        path
+            .attr("d", line)
+            .attr("transform", null);
+
+        axis.call(x.axis);
+
+        // path
+        //     .attr("d", line)
+        //     .transition()
+        //     .duration(500)
+        //     .attr("transform", "translate(" + x(now - (n - 1) * duration) + ")")
+        //     .each("end", tick);
+
+        path
+            .attr("d", line)
+            .transition()
+            .duration(2000)
+            .attr("transform", "translate(" + x(now - (n - 1) * duration) + ",0)")
+            // .attr("transform", "translate(100,-10)")
+            .each("end", tick)
+
+        dataArray.shift();
+
+        // if(dataArray.length > 18){
+        //     dataArray.shift();
+        // }
+
+    }
+</script>
+
+</html>
